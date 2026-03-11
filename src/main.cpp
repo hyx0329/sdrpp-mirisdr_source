@@ -51,7 +51,8 @@ const char* bandwidthsTxt = "200kHz\0"
                             "5MHz\0"
                             "6MHz\0"
                             "7MHz\0"
-                            "8MHz\0";
+                            "8MHz\0"
+                            "14MHz\0";
 
 const int bandwidths[] = {
     200000,
@@ -61,7 +62,8 @@ const int bandwidths[] = {
     5000000,
     6000000,
     7000000,
-    8000000
+    8000000,
+    14000000,
 };
 
 const char* ifFreqsTxt = "0\0"
