@@ -78,6 +78,14 @@ const int ifFreqs[] = {
     2048000,
 };
 
+const char* hardwareFlavoursTxt = "Generic\0"
+                                  "SDRPlay\0";
+
+const int hardwareFlavours[] = {
+    0,
+    1,
+};
+
 class MirisdrSourceModule : public ModuleManager::Instance {
 public:
     MirisdrSourceModule(std::string name) {
@@ -417,7 +425,9 @@ private:
             core::setInputSampleRate(_this->sampleRate);
         }
 
-        if (SmGui::Checkbox(CONCAT("SDRPLAY HWF##_mirisdr_hwf_", _this->name), &_this->devset_hwf)) {
+        SmGui::LeftLabel("HW Flavour");
+        SmGui::FillWidth();
+        if (SmGui::Combo(CONCAT("##_mirisdr_flavour_sel_", _this->name), &_this->devset_hwf, hardwareFlavoursTxt)) {
             config.acquire();
             config.conf["devices"][_this->selectedSerial]["devset_hwf"] = _this->devset_hwf;
             config.release(true);
@@ -589,7 +599,7 @@ private:
     int bwId = 16;
     bool devset_autogain = true;
     int devset_gain = 0;
-    bool devset_hwf = false;
+    int devset_hwf = 0;
     int devset_iffreq = 0;
     bool devset_offsettuning = false;
     int devset_tuner_gain = 0;
