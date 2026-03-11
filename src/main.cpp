@@ -171,7 +171,7 @@ public:
         if (!config.conf["devices"].contains(serial)) {
             config.conf["devices"][serial]["sampleRate"] = 1540000;
             config.conf["devices"][serial]["bandwidth"] = 3;
-            config.conf["devices"][serial]["devset_autogain"] = devset_autogain;
+            config.conf["devices"][serial]["devset_simplegain"] = devset_simplegain;
             config.conf["devices"][serial]["devset_gain"] = devset_gain;
             config.conf["devices"][serial]["devset_hwf"] = devset_hwf;
             config.conf["devices"][serial]["devset_iffreq"] = devset_iffreq;
@@ -205,8 +205,8 @@ public:
             bwId = config.conf["devices"][serial]["bandwidth"];
             bwId = std::clamp<int>(bwId, 0, 7);
         }
-        if (config.conf["devices"][serial].contains("devset_autogain")) {
-            devset_autogain = config.conf["devices"][serial]["devset_autogain"];
+        if (config.conf["devices"][serial].contains("devset_simplegain")) {
+            devset_simplegain = config.conf["devices"][serial]["devset_simplegain"];
         }
         if (config.conf["devices"][serial].contains("devset_gain")) {
             devset_gain = config.conf["devices"][serial]["devset_gain"];
@@ -326,7 +326,7 @@ private:
                 return;
             }
         }
-        if(_this->devset_autogain) {
+        if(_this->devset_simplegain) {
             if(mirisdr_set_tuner_gain(_this->openDev, _this->devset_gain)) {
                 flog::error("Could not set MiriSDR gain {0}", _this->selectedSerial);
                 return;
@@ -485,9 +485,9 @@ private:
             config.release(true);
         }
 
-        if (SmGui::Checkbox(CONCAT("Simple gain##_mirisdr_bias_", _this->name), &_this->devset_autogain)) {
+        if (SmGui::Checkbox(CONCAT("Simple gain##_mirisdr_bias_", _this->name), &_this->devset_simplegain)) {
             if (_this->running) {
-                if(_this->devset_autogain) {
+                if(_this->devset_simplegain) {
                     if(mirisdr_set_tuner_gain(_this->openDev, _this->devset_gain)) {
                         flog::error("Could not set MiriSDR gain {0}", _this->selectedSerial);
                     }
@@ -507,11 +507,11 @@ private:
                 }
             }
             config.acquire();
-            config.conf["devices"][_this->selectedSerial]["devset_autogain"] = _this->devset_autogain;
+            config.conf["devices"][_this->selectedSerial]["devset_simplegain"] = _this->devset_simplegain;
             config.release(true);
         }
         
-        if(_this->devset_autogain) {
+        if(_this->devset_simplegain) {
             SmGui::LeftLabel("Gain");
             SmGui::FillWidth();
             if (SmGui::SliderInt(CONCAT("##_mirisdr_gain_", _this->name), &_this->devset_gain, 0, 102)) {
@@ -597,7 +597,7 @@ private:
     int devId = 0;
     int srId = 0;
     int bwId = 16;
-    bool devset_autogain = true;
+    bool devset_simplegain = true;
     int devset_gain = 0;
     int devset_hwf = 0;
     int devset_iffreq = 0;
