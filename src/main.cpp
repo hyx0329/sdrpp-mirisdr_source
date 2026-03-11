@@ -12,6 +12,11 @@
 
 #include <mirisdr.h>
 
+#ifdef __ANDROID__
+#include <android_backend.h>
+#include "vidpids.h"
+#endif
+
 #define CONCAT(a, b) ((std::string(a) + b).c_str())
 
 SDRPP_MOD_INFO{
@@ -153,6 +158,7 @@ public:
         devList.clear();
         devListTxt = "";
 
+#ifndef __ANDROID__
         int cnt = mirisdr_get_device_count();
 
         for(int i = 0; i < cnt; i++) {
@@ -166,6 +172,17 @@ public:
                 devListTxt += '\0';
             }
         }
+#else
+        int vid, pid;
+        devFd = backend::getDeviceFD(vid, pid, MIRISDR_VIDPIDS);
+        if (devFd < 0) { return; }
+
+        // Generate fake device info
+        std::string fakeName = "MiriSDR Dongle USB";
+        devList.push_back(fakeName);
+        devListTxt += fakeName;
+        devListTxt += '\0';
+#endif
     }
 
     void selectFirst() {
@@ -285,6 +302,8 @@ private:
             flog::error("Tried to start MiriSDR source with empty serial");
             return;
         }
+
+#ifndef __ANDROID__
         int cnt = mirisdr_get_device_count();
         int id = -1;
 
@@ -308,6 +327,17 @@ private:
             flog::error("Could not open MiriSDR {0} id {1} cnt {2}", _this->selectedSerial, id, cnt);
             return;
         }
+#else
+        if(_this->devFd < 0) {
+            flog::error("MiriSDR device is not available");
+            return;
+        }
+
+        if(mirisdr_open_fd(&_this->openDev, _this->devFd)) {
+            flog::error("Could not open MiriSDR FD {0}", _this->devFd);
+            return;
+        }
+#endif
         if(mirisdr_set_hw_flavour(_this->openDev, _this->devset_hwf ? MIRISDR_HW_SDRPLAY : MIRISDR_HW_DEFAULT)) {
             flog::error("Could not set MiriSDR hw flavour {0}", _this->selectedSerial);
             return;
@@ -613,6 +643,11 @@ private:
     int devId = 0;
     int srId = 0;
     int bwId = 16;
+
+#ifdef __ANDROID__
+    int devFd = -1;
+#endif
+
     bool devset_simplegain = true;
     int devset_gain = 0;
     int devset_hwf = 0;

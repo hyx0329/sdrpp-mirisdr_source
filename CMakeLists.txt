@@ -1,12 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 project(mirisdr_source)
 
-set(CMAKE_INSTALL_PREFIX "/usr/")
-include(GNUInstallDirs)
-
-file(GLOB_RECURSE SRC "src/*.cpp" "src/*.c")
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
+file(GLOB SRC "src/*.cpp")
 
 if (NOT SDRPP_MODULE_CMAKE)
     set(SDRPP_MODULE_CMAKE "/usr/share/cmake/Modules/sdrpp_module.cmake")
@@ -14,4 +9,23 @@ endif ()
 
 include(${SDRPP_MODULE_CMAKE})
 
-target_link_libraries(mirisdr_source PRIVATE mirisdr)
+if (MSVC)
+    # Lib path
+    target_link_directories(mirisdr_source PRIVATE "C:/Program Files/PothosSDR/bin/")
+
+    target_link_libraries(mirisdr_source PRIVATE mirisdr)
+elseif (ANDROID)
+    target_link_libraries(mirisdr_source PUBLIC
+        /sdr-kit/${ANDROID_ABI}/lib/libusb1.0.so
+        /sdr-kit/${ANDROID_ABI}/lib/libmirisdr.so
+    )
+else (MSVC)
+    find_package(PkgConfig)
+
+    pkg_check_modules(LIBMIRISDR REQUIRED libmirisdr)
+    pkg_check_modules(LIBUSB REQUIRED libusb-1.0)
+
+    target_include_directories(mirisdr_source PRIVATE ${LIBMIRISDR_INCLUDE_DIRS} ${LIBUSB_INCLUDE_DIRS})
+    target_link_directories(mirisdr_source PRIVATE ${LIBMIRISDR_LIBRARY_DIRS} ${LIBUSB_LIBRARY_DIRS})
+    target_link_libraries(mirisdr_source PRIVATE ${LIBMIRISDR_LIBRARIES} ${LIBUSB_LIBRARIES})
+endif ()
