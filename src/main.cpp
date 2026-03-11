@@ -24,7 +24,22 @@ SDRPP_MOD_INFO{
 
 ConfigManager config;
 
-const char* sampleRatesTxt = "15MHz\00014MHz\00013MHz\00012MHz\00011MHz\00010MHz\0009MHz\0008MHz\0007MHz\0006MHz\0005MHz\0004MHz\0003MHz\0002MHz\0001.54MHz\000";
+const char* sampleRatesTxt = "15MHz\0"
+                            "14MHz\0"
+                            "13MHz\0"
+                            "12MHz\0"
+                            "11MHz\0"
+                            "10MHz\0"
+                            "9MHz\0"
+                            "8MHz\0"
+                            "7MHz\0"
+                            "6MHz\0"
+                            "5MHz\0"
+                            "4MHz\0"
+                            "3MHz\0"
+                            "2.048MHz\0"
+                            "1.536MHz\0"
+                            "1.3MHz\0";
 
 const int sampleRates[] = {
     15000000,
@@ -40,8 +55,9 @@ const int sampleRates[] = {
     5000000,
     4000000,
     3000000,
-    2000000,
-    1540000,
+    2048000,
+    1536000,
+    1300000,
 };
 
 const char* bandwidthsTxt = "200kHz\0"
