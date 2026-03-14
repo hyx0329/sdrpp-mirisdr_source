@@ -382,7 +382,7 @@ private:
                 flog::error("Could not set MiriSDR mixer gain {0}", _this->selectedSerial);
                 return;
             }
-            if(mirisdr_set_mixbuffer_gain(_this->openDev, _this->devset_mixbuffer_gain)) {
+            if(mirisdr_set_mixbuffer_gain(_this->openDev, _this->devset_mixbuffer_gain * 6)) {
                 flog::error("Could not set MiriSDR mixbuffer gain {0}", _this->selectedSerial);
                 return;
             }
@@ -541,7 +541,7 @@ private:
                     if(mirisdr_set_mixer_gain(_this->openDev, _this->devset_mixer_gain)) {
                         flog::error("Could not set MiriSDR mixer gain {0}", _this->selectedSerial);
                     }
-                    if(mirisdr_set_mixbuffer_gain(_this->openDev, _this->devset_mixbuffer_gain)) {
+                    if(mirisdr_set_mixbuffer_gain(_this->openDev, _this->devset_mixbuffer_gain * 6)) {
                         flog::error("Could not set MiriSDR mixbuffer gain {0}", _this->selectedSerial);
                     }
                     if(mirisdr_set_lna_gain(_this->openDev, _this->devset_lna_gain)) {
@@ -587,7 +587,7 @@ private:
             SmGui::FillWidth();
             if (SmGui::SliderInt(CONCAT("##_mirisdr_mbgain_", _this->name), &_this->devset_mixbuffer_gain, 0, 3)) {
                 if (_this->running) {
-                    if(mirisdr_set_mixbuffer_gain(_this->openDev, _this->devset_mixbuffer_gain)) {
+                    if(mirisdr_set_mixbuffer_gain(_this->openDev, _this->devset_mixbuffer_gain * 6)) {
                         flog::error("Could not set MiriSDR mixbuffer gain {0}", _this->selectedSerial);
                     }
                 }
